@@ -1,12 +1,21 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const dotenv = require("dotenv");
 
-const { connectToDB } = require("../src/utils/connectToDB");
+const authRouter = require("./src/routes/authRoute");
+
+const { connectToDB } = require("./src/utils/connectToDB");
+const postRouter = require("./src/routes/postRoute");
 const app = express();
+
+dotenv.config();
 
 app.use(cors());
 app.use(bodyParser.json());
+
+app.use("/auth", authRouter);
+app.use("/posts", postRouter);
 
 const port = 3001;
 
