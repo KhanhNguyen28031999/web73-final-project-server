@@ -1,14 +1,13 @@
-const { objectID } = require("mongodb");
+const { ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const { db } = require("../utils/connectToDB");
 
 //get Posts
 const getPosts = async (req, res) => {
   try {
-    const page = parseInt(req.querry.page) || 1;
-    const pageSize = parseInt(req.querry.pageSize) || 5;
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 5;
     const skip = (page - 1) * pageSize;
-    console.log(page);
     const pipeline = [
       {
         $lookup: {
@@ -28,13 +27,14 @@ const getPosts = async (req, res) => {
         },
       },
     ];
+    console.log(pipeline);
     const [result] = await db.posts.aggregate(pipeline).toArray();
+    console.log(result);
     const { paginatedPosts, totalCount } = result;
     const totalPosts = totalCount.length > 0 ? totalCount[0].count : 0;
     const totalPages = Math.ceil(totalPosts / pageSize);
-
     res.status(200).json({
-      message: "Get post list successful !",
+      message: "Get post list successful",
       data: paginatedPosts,
       page,
       pageSize,
@@ -57,7 +57,7 @@ const getPostById = async (req, res) => {
   try {
     const id = req.params.id;
     const post = await db.posts.findOne({
-      _id: new objectID(id),
+      _id: new ObjectId(id),
     });
     res.status(200).json({
       message: "Get post detail by id successful",
@@ -78,12 +78,13 @@ const getPostById = async (req, res) => {
 const createPost = async (req, res) => {
   try {
     const { userId } = req.user;
+    const _id = new ObjectId(userId);
     const { title, content, hashtags } = req.body;
     const post = {
       title,
       content,
       hashtags,
-      author: userId,
+      author: _id,
     };
     await db.posts.insertOne(post);
     res.status(201).json({
@@ -108,7 +109,7 @@ const updatePost = async (req, res) => {
     const id = req.params.id;
     await db.posts.updateOne(
       {
-        _id: new objectID(id),
+        _id: new ObjectId(id),
       },
       {
         $set: {
@@ -139,7 +140,7 @@ const deletePost = async (req, res) => {
   const id = req.params.id;
   try {
     await db.posts.deleteOne({
-      _id: new objectID(id),
+      _id: new ObjectId(id),
     });
     res.status(200).json({
       message: "Xoá bài viết thành công !",
