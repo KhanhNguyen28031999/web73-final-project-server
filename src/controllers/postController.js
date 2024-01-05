@@ -18,6 +18,9 @@ const getPosts = async (req, res) => {
         },
       },
       {
+        $sort: { createdAt: -1 },
+      },
+      {
         $unwind: "$author",
       },
       {
@@ -27,9 +30,7 @@ const getPosts = async (req, res) => {
         },
       },
     ];
-    console.log(pipeline);
     const [result] = await db.posts.aggregate(pipeline).toArray();
-    console.log(result);
     const { paginatedPosts, totalCount } = result;
     const totalPosts = totalCount.length > 0 ? totalCount[0].count : 0;
     const totalPages = Math.ceil(totalPosts / pageSize);
@@ -79,12 +80,15 @@ const createPost = async (req, res) => {
   try {
     const { userId } = req.user;
     const _id = new ObjectId(userId);
+    const now = new Date();
+    const dateString = now.toISOString();
     const { title, content, hashtags } = req.body;
     const post = {
       title,
       content,
       hashtags,
       author: _id,
+      createdAt: dateString,
     };
     await db.posts.insertOne(post);
     res.status(201).json({

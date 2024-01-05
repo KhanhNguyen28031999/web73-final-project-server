@@ -1,7 +1,8 @@
 const { MongoClient } = require("mongodb");
 
 //setup database
-const URL = "mongodb://localhost:27017";
+const URL =
+  "mongodb+srv://nguyenkhanh28031999:Khanh%401999@cluster0.tnn8m9d.mongodb.net/";
 const DATABASE = "Project";
 
 const db = {};
