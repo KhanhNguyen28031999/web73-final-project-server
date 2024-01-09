@@ -16,6 +16,7 @@ async function connectToDB() {
   //setup collection
   db.users = database.collection("users");
   db.posts = database.collection("posts");
+  db.comments = database.collection("comments");
 }
 
 module.exports = { connectToDB, db };
