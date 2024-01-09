@@ -7,6 +7,9 @@ const authRouter = require("./src/routes/authRoute");
 
 const { connectToDB } = require("./src/utils/connectToDB");
 const postRouter = require("./src/routes/postRoute");
+const userRouter = require("./src/routes/user");
+const messageRouter = require("./src/routes/message");
+const followerRouter = require("./src/routes/follower");
 const app = express();
 
 dotenv.config();
@@ -16,7 +19,9 @@ app.use(bodyParser.json());
 
 app.use("/auth", authRouter);
 app.use("/posts", postRouter);
-
+app.use("/users", userRouter);
+app.use("/messages", messageRouter);
+app.use("/followers", followerRouter);
 const port = 3001;
 
 app.listen(port, () => {
