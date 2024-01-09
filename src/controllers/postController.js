@@ -1,5 +1,4 @@
 const { ObjectId } = require("mongodb");
-const jwt = require("jsonwebtoken");
 const { db } = require("../utils/connectToDB");
 
 //get Posts
