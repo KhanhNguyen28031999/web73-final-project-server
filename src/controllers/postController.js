@@ -1,5 +1,6 @@
 const { ObjectId } = require("mongodb");
 const { db } = require("../utils/connectToDB");
+const { post } = require("../routes/postRoute");
 
 //get Posts
 const getPosts = async (req, res) => {
@@ -107,7 +108,7 @@ const createPost = async (req, res) => {
 // update Post
 
 const updatePost = async (req, res) => {
-  const { title, content, author, hashtags } = req.body;
+  const { title, content, hashtags } = req.body;
   try {
     const id = req.params.id;
     await db.posts.updateOne(
@@ -118,13 +119,12 @@ const updatePost = async (req, res) => {
         $set: {
           title: title,
           content: content,
-          author: author,
           hashtags: hashtags,
         },
       }
     );
     res.status(200).json({
-      message: "Bài viết đã được cập nhật !",
+      message: "Update post by id successful",
       data: { ...req.body, id: id },
       isSuccess: true,
     });

@@ -11,7 +11,7 @@ postRouter.get("/", postController.getPosts);
 //get post by id
 postRouter.get("/:id", postController.getPostById);
 //update post by id
-postRouter.put("/:id", postController.updatePost);
+postRouter.put("/:id", authenticateUser, postController.updatePost);
 //delete post by id
 postRouter.delete("/:id", postController.deletePost);
 
