@@ -20,6 +20,7 @@ async function connectToDB() {
   db.reactions = database.collection("reactions");
   db.followers = database.collection("followers");
   db.messages = database.collection("messages");
+  console.log("Connected to database");
 }
 
 module.exports = { connectToDB, db };

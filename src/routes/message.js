@@ -10,5 +10,5 @@ messageRouter.post(
   authenticateUser,
   messageController.createMessage
 );
-
+messageRouter.get("/id", authenticateUser, messageController.readMessageById);
 module.exports = messageRouter;

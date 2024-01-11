@@ -2,9 +2,18 @@ const { ObjectId } = require("mongodb");
 const { db } = require("../utils/connectToDB");
 class Follower {
   async readFollower(id) {
-    // const res =
-    //   (await db.followers.find({ from: new ObjectId(id) }).toArray()) || [];
     const pipeline = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "from",
+          foreignField: "_id",
+          as: "from",
+        },
+      },
+      {
+        $unwind: "$from",
+      },
       {
         $lookup: {
           from: "users",
@@ -18,20 +27,29 @@ class Follower {
       },
       {
         $match: {
-          from: new ObjectId(id),
+          "from._id": new ObjectId(id),
+        },
+      },
+      {
+        $project: {
+          "from._id": 1,
+          "from.name": 1,
+          "to._id": 1,
+          "to.name": 1,
         },
       },
     ];
-    const [result] = await db.followers.aggregate(pipeline).toArray();
+
+    const result = await db.followers.aggregate(pipeline).toArray();
     return result;
   }
+
   async createFollower(from, to) {
     const result = await db.followers.insertOne({
       _id: new ObjectId(),
       from: new ObjectId(from),
       to: new ObjectId(to),
     });
-    console.log(result);
     return result;
   }
   async updateFollower(message) {}

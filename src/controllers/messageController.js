@@ -22,9 +22,27 @@ class messageController {
   }
   async createMessage(req, res, next) {
     try {
-      const { receiver } = req.query;
+      const { receiver, content } = req.body;
       const sender = req.user.userId;
       const result = await Message.createMessage(sender, receiver, content);
+      if (result) {
+        res.status(200).json({
+          check: true,
+          data: result,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        check: "false",
+        msg: "Lỗi máy chủ",
+      });
+    }
+  }
+  async readMessageById(req, res, next) {
+    try {
+      const receiver = req.user.userId;
+      const result = await Message.readMessageById(receiver);
       if (result) {
         res.status(200).json({
           check: true,
