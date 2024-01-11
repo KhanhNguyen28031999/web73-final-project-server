@@ -1,5 +1,6 @@
 const { ObjectId } = require("mongodb");
 const { db } = require("../utils/connectToDB");
+const bcrypt = require("bcrypt");
 class User {
   async readStat(id) {
     const follower =
@@ -11,7 +12,7 @@ class User {
         $lookup: {
           from: "comments",
           localField: "_id",
-          foreignField: "postId",
+          foreignField: "postID",
           as: "comment",
         },
       },
@@ -24,6 +25,7 @@ class User {
           as: "reaction",
         },
       },
+      { $unwind: "$reaction" },
       {
         $match: {
           author: new ObjectId(id),
@@ -42,6 +44,51 @@ class User {
       posts: post.length,
       result,
     };
+  }
+  async readUser(id) {
+    const result =
+      (await db.users
+        .find(
+          { _id: { $nin: [new ObjectId(id)] } },
+          { projection: { _id: 1, name: 1 } }
+        )
+        .toArray()) || [];
+    return result;
+  }
+  async readUserById(id) {
+    const result =
+      (await db.users.find({ _id: new ObjectId(id) }).toArray()) || [];
+    return result;
+  }
+  async updateUser(name, email, phonenumber, id) {
+    const result = await db.users.updateOne(
+      {
+        _id: new ObjectId(id),
+      },
+      {
+        $set: {
+          name: name,
+          email: email,
+          phonenumber: phonenumber,
+        },
+      }
+    );
+    return result;
+  }
+  async updatePassword(curpass, newpass, id) {
+    const saltRound = 10;
+    const hashedPassword = await bcrypt.hash(newpass, saltRound);
+    const result = await db.users.updateOne(
+      {
+        _id: new ObjectId(id),
+      },
+      {
+        $set: {
+          password: hashedPassword,
+        },
+      }
+    );
+    return result;
   }
 }
 module.exports = new User();

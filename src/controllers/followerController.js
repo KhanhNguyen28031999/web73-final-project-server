@@ -19,7 +19,24 @@ class followerController {
       });
     }
   }
-  async createFollower(req, res, next) {}
+  async createFollower(req, res, next) {
+    try {
+      const id = req.user.userId;
+      const { to } = req.body;
+      const result = await Follower.createFollower(id, to);
+      if (result) {
+        res.status(200).json({
+          check: true,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        check: "false",
+        msg: "Lỗi máy chủ",
+      });
+    }
+  }
   async updateFollower(req, res, next) {}
   async deleteFollower(req, res, next) {}
 }

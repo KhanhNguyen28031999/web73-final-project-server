@@ -6,7 +6,7 @@ const getComments = async (req, res) => {
   try {
     const { postId } = req.params;
     const comments = await db.comments
-      .find({ postId: { $eq: postId } })
+      .find({ postID: new ObjectId(postId) })
       .sort({ createAt: -1 })
       .toArray();
     if (!comments.length) {
