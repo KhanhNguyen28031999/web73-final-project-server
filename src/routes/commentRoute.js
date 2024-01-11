@@ -4,7 +4,7 @@ const commentController = require("../controllers/commentController");
 const authenticateUser = require("../middlewares/authenticateUser");
 
 //get all
-commentRoute.get("/", commentController.getComment);
+commentRoute.get("/:postId", commentController.getComments);
 //get by id
 commentRoute.get("/:id", commentController.getCommentByID);
 //create

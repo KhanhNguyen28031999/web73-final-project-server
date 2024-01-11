@@ -2,8 +2,35 @@ const { ObjectId } = require("mongodb");
 const { db } = require("../utils/connectToDB");
 
 //get all
-const getComment = (req, res) => {};
+const getComments = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const comments = await db.comments
+      .find({ postId: { $eq: postId } })
+      .sort({ createAt: -1 })
+      .toArray();
+    if (!comments.length) {
+      res.status(404).json({
+        message: "Comments for postId not found",
+        data: null,
+        isSuccess: false,
+      });
+      return;
+    }
 
+    res.status(200).json({
+      msg: "Get all comment success",
+      data: comments,
+      isSuccess: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      data: null,
+      isSuccess: false,
+    });
+  }
+};
 //get cmt by id
 const getCommentByID = (req, res) => {};
 
@@ -15,8 +42,9 @@ const createComment = async (req, res) => {
     const now = new Date();
     const dateString = now.toISOString();
     const { postId, content } = req.body;
+    const postID = new ObjectId(postId);
     const newComment = {
-      postId,
+      postID,
       content,
       author: _id,
       createdAt: dateString,
@@ -85,7 +113,7 @@ const deleteComment = async (req, res) => {
 };
 
 module.exports = {
-  getComment,
+  getComments,
   getCommentByID,
   createComment,
   editComment,
