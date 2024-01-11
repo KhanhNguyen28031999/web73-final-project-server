@@ -10,8 +10,8 @@ commentRoute.get("/:id", commentController.getCommentByID);
 //create
 commentRoute.post("/", authenticateUser, commentController.createComment);
 //edit
-commentRoute.put("/:id", commentController.editComment);
+commentRoute.put("/:id", authenticateUser, commentController.editComment);
 //delete
-commentRoute.delete("/:id", commentController.deleteComment);
+commentRoute.delete("/:id", authenticateUser, commentController.deleteComment);
 
 module.exports = commentRoute;

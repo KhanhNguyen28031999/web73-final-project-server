@@ -17,7 +17,6 @@ const getComments = async (req, res) => {
       });
       return;
     }
-
     res.status(200).json({
       msg: "Get all comment success",
       data: comments,
@@ -32,7 +31,7 @@ const getComments = async (req, res) => {
   }
 };
 //get cmt by id
-const getCommentByID = (req, res) => {};
+const getCommentByID = async (req, res) => {};
 
 //create
 const createComment = async (req, res) => {
