@@ -7,6 +7,7 @@ const authRouter = require("./src/routes/authRoute");
 
 const { connectToDB } = require("./src/utils/connectToDB");
 const postRouter = require("./src/routes/postRoute");
+const commentRoute = require("./src/routes/commentRoute");
 const userRouter = require("./src/routes/user");
 const messageRouter = require("./src/routes/message");
 const followerRouter = require("./src/routes/follower");
@@ -19,6 +20,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/comments", commentRoute);
 app.use("/auth", authRouter);
 app.use("/posts", postRouter);
 app.use("/users", userRouter);
