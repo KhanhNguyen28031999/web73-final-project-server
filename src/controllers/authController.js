@@ -1,7 +1,21 @@
 const { db } = require("../utils/connectToDB");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { ObjectID } = require("mongodb");
+const { ObjectId } = require("mongodb");
+
+const getAllUser = async (req, res) => {
+  const user = await db.users.find().toArray();
+  res.json(user);
+};
+
+const getUserByID = async (req, res) => {
+  const id = req.params;
+  const userId = new ObjectId(id);
+  const user = await db.users.findOne({
+    _id: userId,
+  });
+  res.json(user);
+};
 
 const registerController = async (req, res) => {
   const saltRound = 10;
@@ -30,6 +44,10 @@ const registerController = async (req, res) => {
       password: hashedPassword,
       email,
       phonenumber,
+      avatar:
+        "https://cdn.sforum.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg",
+      background:
+        "https://inkythuatso.com/uploads/thumbnails/800/2022/04/anh-mau-xam-dep-103622756-06-15-55-21.jpg",
     });
     res.status(201).json({
       message: "Đăng ký thành công",
@@ -88,7 +106,8 @@ const loginController = async (req, res) => {
 const getMyProfile = async (req, res) => {
   try {
     const { userId } = req.user;
-    const user = await db.users.findOne({ _id: new ObjectID(userId) });
+    const _id = new ObjectId(userId);
+    const user = await db.users.findOne({ _id: _id });
 
     if (!user) {
       res.status(404).json({
@@ -102,6 +121,10 @@ const getMyProfile = async (req, res) => {
       user: {
         _id: user._id,
         username: user.username,
+        phonenumber: user.phonenumber,
+        avatar: user.avatar,
+        background: user.background,
+        email: user.email,
       },
       isSuccess: true,
     });
@@ -115,4 +138,44 @@ const getMyProfile = async (req, res) => {
   }
 };
 
-module.exports = { registerController, loginController, getMyProfile };
+const editUserByID = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const { username, email, phonenumber, password } = req.body;
+    const newUser = {
+      username,
+      email,
+      phonenumber,
+      password,
+    };
+
+    const result = await db.users.updateOne(
+      {
+        _id: new ObjectId(userId),
+      },
+      {
+        $set: newUser,
+      }
+    );
+    res.status(201).json({
+      msg: "Edit information successful !",
+      data: result,
+      isSuccess: true,
+    });
+  } catch (error) {
+    res.status(400).json({
+      msg: "Edit failed !",
+      data: null,
+      isSuccess: false,
+    });
+  }
+};
+
+module.exports = {
+  registerController,
+  loginController,
+  getMyProfile,
+  getAllUser,
+  getUserByID,
+  editUserByID,
+};

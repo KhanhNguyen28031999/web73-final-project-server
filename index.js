@@ -11,6 +11,7 @@ const commentRoute = require("./src/routes/commentRoute");
 const userRouter = require("./src/routes/user");
 const messageRouter = require("./src/routes/message");
 const followerRouter = require("./src/routes/follower");
+const reactsRouter = require("./src/routes/reactionRoute");
 const app = express();
 
 dotenv.config();
@@ -18,6 +19,7 @@ dotenv.config();
 app.use(cors());
 app.use(bodyParser.json());
 
+app.use("/reactions", reactsRouter);
 app.use("/comments", commentRoute);
 app.use("/auth", authRouter);
 app.use("/posts", postRouter);

@@ -3,9 +3,18 @@ const { db } = require("../utils/connectToDB");
 class User {
   async readStat(id) {
     const follower =
-      (await db.followers.find({ to: new ObjectId(id) }).toArray()) || [];
+      (await db.followers.find({ following: new ObjectId(id) }).toArray()) ||
+      [];
     const post =
       (await db.posts.find({ author: new ObjectId(id) }).toArray()) || [];
+
+    const USER = (await db.users.findOne({ _id: new ObjectId(id) })) || [];
+    const comments =
+      (await db.comments.find({ author: USER.username }).toArray()) || [];
+
+    const reactions =
+      (await db.reactions.find({ userId: new ObjectId(id) }).toArray()) || [];
+
     const pipeline = [
       {
         $lookup: {
@@ -40,6 +49,8 @@ class User {
     return {
       followers: follower.length,
       posts: post.length,
+      comments: comments.length,
+      reactions: reactions.length,
       result,
     };
   }

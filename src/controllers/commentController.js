@@ -31,21 +31,42 @@ const getComments = async (req, res) => {
   }
 };
 //get cmt by id
-const getCommentByID = async (req, res) => {};
+const getCommentByID = async (req, res) => {
+  try {
+    const id = req.params;
+    const _id = new ObjectId(id);
+    const comment = await db.comments.findOne({ _id: _id });
+    res.status(200).json({
+      msg: "Successful",
+      data: comment,
+      isSuccess: true,
+    });
+  } catch (error) {
+    res.status(400).json({
+      msg: "Failed",
+      data: null,
+      isSuccess: false,
+    });
+  }
+};
 
 //create
 const createComment = async (req, res) => {
   try {
     const { userId } = req.user;
-    const _id = new ObjectId(userId);
+    const _userId = new ObjectId(userId);
+    const username = await db.users.findOne({ _id: _userId });
+    const name = username.username;
     const now = new Date();
     const dateString = now.toISOString();
     const { postId, content } = req.body;
     const postID = new ObjectId(postId);
+    const author = name;
     const newComment = {
+      _userId,
       postID,
       content,
-      author: _id,
+      author: author,
       createdAt: dateString,
     };
     await db.comments.insertOne(newComment);
@@ -76,7 +97,7 @@ const editComment = async (req, res) => {
         _id: new ObjectId(id),
       },
       {
-        newComment,
+        $set: { newComment },
       }
     );
     res.status(201).json({
